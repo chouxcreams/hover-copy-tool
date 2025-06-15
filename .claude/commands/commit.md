@@ -17,7 +17,7 @@
 
 ## Tool
 
-以下の操作はMCPサーバーを経由してください
+以下の操作はMCPサーバーを使用してください
 
 - `git_diff`
 - `git_diff_unstaged`
