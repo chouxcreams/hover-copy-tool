@@ -104,6 +104,7 @@ PRDに基づき、拡張機能は以下の構成要素で実装されていま�
 ### テスト
 
 ユニットテストは以下の範囲をカバー：
+
 - `src/utils/urlExtractor.test.ts` - URL抽出ロジック
 - `src/utils/storage.test.ts` - ストレージ操作
 - `src/components/*.test.tsx` - Reactコンポーネント

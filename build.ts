@@ -1,12 +1,20 @@
-import esbuild from 'esbuild';
-import { readFileSync, writeFileSync, copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import esbuild from "esbuild";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const isWatch = process.argv.includes('--watch');
+const isWatch = process.argv.includes("--watch");
 
 interface BuildConfig extends esbuild.BuildOptions {
   outfile: string;
@@ -27,38 +35,38 @@ const commonConfig: Partial<esbuild.BuildOptions> = {
   bundle: true,
   minify: !isWatch,
   sourcemap: isWatch,
-  target: 'es2020',
-  format: 'iife',
+  target: "es2020",
+  format: "iife",
   external: [],
   define: {
-    'process.env.NODE_ENV': isWatch ? '"development"' : '"production"'
-  }
+    "process.env.NODE_ENV": isWatch ? '"development"' : '"production"',
+  },
 };
 
 const buildConfigs: BuildConfig[] = [
   {
     ...commonConfig,
-    entryPoints: ['src/content.tsx'],
-    outfile: 'dist/content.js',
-    globalName: 'HoverCopyContent'
+    entryPoints: ["src/content.tsx"],
+    outfile: "dist/content.js",
+    globalName: "HoverCopyContent",
   },
   {
     ...commonConfig,
-    entryPoints: ['src/popup.tsx'],
-    outfile: 'dist/popup.js',
-    globalName: 'HoverCopyPopup'
-  }
+    entryPoints: ["src/popup.tsx"],
+    outfile: "dist/popup.js",
+    globalName: "HoverCopyPopup",
+  },
 ];
 
 const copyFiles: CopyFile[] = [
-  { from: 'src/manifest.json', to: 'dist/manifest.json' },
-  { from: 'src/popup.html', to: 'dist/popup.html' },
-  { from: 'src/popup.css', to: 'dist/popup.css' },
-  { from: 'src/content.css', to: 'dist/content.css' }
+  { from: "src/manifest.json", to: "dist/manifest.json" },
+  { from: "src/popup.html", to: "dist/popup.html" },
+  { from: "src/popup.css", to: "dist/popup.css" },
+  { from: "src/content.css", to: "dist/content.css" },
 ];
 
 const copyDirectories: CopyDirectory[] = [
-  { from: 'src/icons', to: 'dist/icons' }
+  { from: "src/icons", to: "dist/icons" },
 ];
 
 function ensureDir(filePath: string): void {
@@ -73,7 +81,7 @@ function copyDirectory(src: string, dest: string): void {
     mkdirSync(dest, { recursive: true });
   }
   const files = readdirSync(src);
-  files.forEach(file => {
+  files.forEach((file) => {
     const srcPath = join(src, file);
     const destPath = join(dest, file);
     if (statSync(srcPath).isDirectory()) {
@@ -86,8 +94,8 @@ function copyDirectory(src: string, dest: string): void {
 
 async function build(): Promise<void> {
   try {
-    console.log('Building with esbuild...');
-    
+    console.log("Building with esbuild...");
+
     for (const config of buildConfigs) {
       ensureDir(config.outfile);
       if (isWatch) {
@@ -106,7 +114,10 @@ async function build(): Promise<void> {
         copyFileSync(from, to);
         console.log(`Copied ${from} -> ${to}`);
       } catch (error) {
-        console.warn(`Warning: Could not copy ${from} -> ${to}:`, (error as Error).message);
+        console.warn(
+          `Warning: Could not copy ${from} -> ${to}:`,
+          (error as Error).message
+        );
       }
     });
 
@@ -115,17 +126,20 @@ async function build(): Promise<void> {
         copyDirectory(from, to);
         console.log(`Copied directory ${from} -> ${to}`);
       } catch (error) {
-        console.warn(`Warning: Could not copy directory ${from} -> ${to}:`, (error as Error).message);
+        console.warn(
+          `Warning: Could not copy directory ${from} -> ${to}:`,
+          (error as Error).message
+        );
       }
     });
 
     if (!isWatch) {
-      console.log('Build completed successfully!');
+      console.log("Build completed successfully!");
     } else {
-      console.log('Watching for changes...');
+      console.log("Watching for changes...");
     }
   } catch (error) {
-    console.error('Build failed:', error);
+    console.error("Build failed:", error);
     process.exit(1);
   }
 }

@@ -9,8 +9,18 @@ declare namespace chrome {
     }
 
     interface StorageChangedEvent {
-      addListener(callback: (changes: { [key: string]: StorageChange }, areaName: string) => void): void;
-      removeListener(callback: (changes: { [key: string]: StorageChange }, areaName: string) => void): void;
+      addListener(
+        callback: (
+          changes: { [key: string]: StorageChange },
+          areaName: string
+        ) => void
+      ): void;
+      removeListener(
+        callback: (
+          changes: { [key: string]: StorageChange },
+          areaName: string
+        ) => void
+      ): void;
     }
 
     const onChanged: StorageChangedEvent;

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface RegexPattern {
   id: string;
@@ -17,7 +18,7 @@ const PopupApp: React.FC = () => {
   const [activePatternIds, setActivePatternIds] = useState<string[]>([]);
   const [editingPatternId, setEditingPatternId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', regex: '' });
+  const [formData, setFormData] = useState({ name: "", regex: "" });
 
   useEffect(() => {
     loadPatterns();
@@ -26,22 +27,22 @@ const PopupApp: React.FC = () => {
   const loadPatterns = async (): Promise<void> => {
     try {
       const result = (await chrome.storage.sync.get([
-        'regexPatterns',
-        'activePatternIds',
-        'activePatternId', // Legacy support
+        "regexPatterns",
+        "activePatternIds",
+        "activePatternId", // Legacy support
       ])) as StorageData & { activePatternId?: string };
       const loadedPatterns = result.regexPatterns || [];
-      
+
       let activeIds = result.activePatternIds || [];
       // Migration: convert old single activePatternId to array
       if (!result.activePatternIds && result.activePatternId) {
         activeIds = [result.activePatternId];
       }
-      
+
       setPatterns(loadedPatterns);
       setActivePatternIds(activeIds);
     } catch (error) {
-      console.error('Failed to load patterns:', error);
+      console.error("Failed to load patterns:", error);
       setPatterns([]);
       setActivePatternIds([]);
     }
@@ -59,7 +60,7 @@ const PopupApp: React.FC = () => {
       setPatterns(newPatterns);
       setActivePatternIds(newActiveIds);
     } catch (error) {
-      console.error('Failed to save patterns:', error);
+      console.error("Failed to save patterns:", error);
     }
   };
 
@@ -70,24 +71,24 @@ const PopupApp: React.FC = () => {
   const toggleForm = (): void => {
     setShowForm(!showForm);
     if (!showForm) {
-      setFormData({ name: '', regex: '' });
+      setFormData({ name: "", regex: "" });
       setEditingPatternId(null);
     }
   };
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    
+
     const { name, regex } = formData;
     if (!name.trim() || !regex.trim()) {
-      alert('パターン名と正規表現を入力してください。');
+      alert("パターン名と正規表現を入力してください。");
       return;
     }
 
     try {
       new RegExp(regex);
     } catch (error) {
-      alert('正規表現が無効です。正しい形式で入力してください。');
+      alert("正規表現が無効です。正しい形式で入力してください。");
       return;
     }
 
@@ -96,7 +97,8 @@ const PopupApp: React.FC = () => {
       name: name.trim(),
       regex: regex.trim(),
       createdAt: editingPatternId
-        ? patterns.find((p) => p.id === editingPatternId)?.createdAt || Date.now()
+        ? patterns.find((p) => p.id === editingPatternId)?.createdAt ||
+          Date.now()
         : Date.now(),
     };
 
@@ -123,13 +125,13 @@ const PopupApp: React.FC = () => {
   const togglePatternActive = async (patternId: string): Promise<void> => {
     const isActive = activePatternIds.includes(patternId);
     let newActiveIds: string[];
-    
+
     if (isActive) {
-      newActiveIds = activePatternIds.filter(id => id !== patternId);
+      newActiveIds = activePatternIds.filter((id) => id !== patternId);
     } else {
       newActiveIds = [...activePatternIds, patternId];
     }
-    
+
     await savePatterns(patterns, newActiveIds);
   };
 
@@ -143,10 +145,10 @@ const PopupApp: React.FC = () => {
   };
 
   const deletePattern = async (patternId: string): Promise<void> => {
-    if (!confirm('このパターンを削除しますか？')) return;
+    if (!confirm("このパターンを削除しますか？")) return;
 
     const newPatterns = patterns.filter((p) => p.id !== patternId);
-    const newActiveIds = activePatternIds.filter(id => id !== patternId);
+    const newActiveIds = activePatternIds.filter((id) => id !== patternId);
 
     await savePatterns(newPatterns, newActiveIds);
   };
@@ -169,7 +171,7 @@ const PopupApp: React.FC = () => {
               return (
                 <div
                   key={pattern.id}
-                  className={`pattern-item ${isActive ? 'active' : ''}`}
+                  className={`pattern-item ${isActive ? "active" : ""}`}
                 >
                   <div className="pattern-header">
                     <div className="pattern-name">
@@ -177,7 +179,7 @@ const PopupApp: React.FC = () => {
                         type="checkbox"
                         checked={isActive}
                         onChange={() => togglePatternActive(pattern.id)}
-                        style={{ marginRight: '8px' }}
+                        style={{ marginRight: "8px" }}
                       />
                       {pattern.name}
                     </div>
@@ -206,7 +208,7 @@ const PopupApp: React.FC = () => {
 
       <div className="toggle-form">
         <button onClick={toggleForm}>
-          {showForm ? 'フォームを閉じる' : '新しいパターンを追加'}
+          {showForm ? "フォームを閉じる" : "新しいパターンを追加"}
         </button>
       </div>
 
@@ -219,7 +221,9 @@ const PopupApp: React.FC = () => {
               id="patternName"
               placeholder="例: ユーザーID抽出"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
             />
           </div>
           <div className="form-group">
@@ -229,11 +233,17 @@ const PopupApp: React.FC = () => {
               id="patternRegex"
               placeholder="例: /user/(\d+)"
               value={formData.regex}
-              onChange={(e) => setFormData({ ...formData, regex: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, regex: e.target.value })
+              }
             />
           </div>
           <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={toggleForm}>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={toggleForm}
+            >
               キャンセル
             </button>
             <button type="submit" className="btn btn-primary">

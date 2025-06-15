@@ -1,24 +1,21 @@
-import React from 'react';
+import type React from "react";
 
 interface SimpleButtonProps {
   label: string;
   onClick: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
 }
 
-const SimpleButton: React.FC<SimpleButtonProps> = ({ 
-  label, 
-  onClick, 
-  variant = 'primary' 
+const SimpleButton: React.FC<SimpleButtonProps> = ({
+  label,
+  onClick,
+  variant = "primary",
 }) => {
-  const baseClasses = 'btn';
-  const variantClass = variant === 'primary' ? 'btn-primary' : 'btn-secondary';
-  
+  const baseClasses = "btn";
+  const variantClass = variant === "primary" ? "btn-primary" : "btn-secondary";
+
   return (
-    <button 
-      className={`${baseClasses} ${variantClass}`}
-      onClick={onClick}
-    >
+    <button className={`${baseClasses} ${variantClass}`} onClick={onClick}>
       {label}
     </button>
   );

@@ -1,32 +1,32 @@
-import React from 'react';
-import SimpleButton from './SimpleButton';
-import '../popup.css';
+import React from "react";
+import SimpleButton from "./SimpleButton";
+import "../popup.css";
 
 export default {
-  title: 'Components/SimpleButton',
+  title: "Components/SimpleButton",
   component: SimpleButton,
 };
 
 export const Primary = () => (
-  <SimpleButton 
-    label="Primary Button" 
-    onClick={() => alert('Primary clicked!')}
+  <SimpleButton
+    label="Primary Button"
+    onClick={() => alert("Primary clicked!")}
     variant="primary"
   />
 );
 
 export const Secondary = () => (
-  <SimpleButton 
-    label="Secondary Button" 
-    onClick={() => alert('Secondary clicked!')}
+  <SimpleButton
+    label="Secondary Button"
+    onClick={() => alert("Secondary clicked!")}
     variant="secondary"
   />
 );
 
 export const Small = () => (
-  <SimpleButton 
+  <SimpleButton
     label="Small"
-    onClick={() => alert('Small clicked!')}
+    onClick={() => alert("Small clicked!")}
     variant="primary"
   />
 );

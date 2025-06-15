@@ -11,7 +11,10 @@ interface ExtractedMatch {
 }
 
 export class UrlExtractor {
-  static extractMatches(url: string, patterns: RegexPattern[]): ExtractedMatch[] {
+  static extractMatches(
+    url: string,
+    patterns: RegexPattern[]
+  ): ExtractedMatch[] {
     const matches: ExtractedMatch[] = [];
 
     for (const pattern of patterns) {

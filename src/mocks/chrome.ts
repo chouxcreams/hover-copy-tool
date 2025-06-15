@@ -5,29 +5,29 @@ export const mockChromeStorage = {
       return Promise.resolve({
         regexPatterns: [
           {
-            id: 'pattern1',
-            name: 'User ID',
-            regex: 'user/(\\d+)',
+            id: "pattern1",
+            name: "User ID",
+            regex: "user/(\\d+)",
             createdAt: 1671234567890,
           },
           {
-            id: 'pattern2',
-            name: 'Post ID',
-            regex: 'post/(\\d+)',
+            id: "pattern2",
+            name: "Post ID",
+            regex: "post/(\\d+)",
             createdAt: 1671234567891,
           },
         ],
-        activePatternId: 'pattern1',
+        activePatternId: "pattern1",
       });
     },
     set: (data: any) => {
-      console.log('Mock chrome.storage.sync.set called with:', data);
+      console.log("Mock chrome.storage.sync.set called with:", data);
       return Promise.resolve();
     },
   },
   onChanged: {
     addListener: (callback: Function) => {
-      console.log('Mock chrome.storage.onChanged.addListener called');
+      console.log("Mock chrome.storage.onChanged.addListener called");
     },
   },
 };

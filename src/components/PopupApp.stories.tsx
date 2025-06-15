@@ -1,18 +1,18 @@
-import React from 'react';
-import { Meta, Story } from '@storybook/react';
-import PopupApp from './PopupApp';
-import '../popup.css';
+import type { Meta, Story } from "@storybook/react";
+import React from "react";
+import PopupApp from "./PopupApp";
+import "../popup.css";
 
 export default {
-  title: 'Components/PopupApp',
+  title: "Components/PopupApp",
   component: PopupApp,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
 } as Meta;
 
 const Template: Story = (args) => (
-  <div style={{ width: '350px' }}>
+  <div style={{ width: "350px" }}>
     <PopupApp {...args} />
   </div>
 );
@@ -25,7 +25,7 @@ WithoutPatterns.args = {};
 WithoutPatterns.parameters = {
   docs: {
     description: {
-      story: 'パターンが登録されていない初期状態',
+      story: "パターンが登録されていない初期状態",
     },
   },
 };
@@ -36,7 +36,7 @@ WithMockData.args = {};
 WithMockData.parameters = {
   docs: {
     description: {
-      story: 'テストデータを使用したポップアップの表示状態',
+      story: "テストデータを使用したポップアップの表示状態",
     },
   },
 };

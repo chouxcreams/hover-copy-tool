@@ -1,6 +1,6 @@
-import React from 'react';
-import { createRoot, Root } from 'react-dom/client';
-import HoverWindow from './components/HoverWindow';
+import React from "react";
+import { type Root, createRoot } from "react-dom/client";
+import HoverWindow from "./components/HoverWindow";
 
 interface RegexPattern {
   id: string;
@@ -43,7 +43,7 @@ class HoverCopyTool {
         "activePatternId", // Legacy support
       ])) as StorageData & { activePatternId?: string };
       const patterns = result.regexPatterns || [];
-      
+
       let activeIds = result.activePatternIds || [];
       // Migration: convert old single activePatternId to array
       if (!result.activePatternIds && result.activePatternId) {
@@ -53,7 +53,7 @@ class HoverCopyTool {
       console.log("Loaded patterns:", patterns);
       console.log("Active pattern IDs:", activeIds);
 
-      this.activePatterns = patterns.filter(p => activeIds.includes(p.id));
+      this.activePatterns = patterns.filter((p) => activeIds.includes(p.id));
 
       console.log("Final active patterns:", this.activePatterns);
     } catch (error) {
@@ -78,7 +78,11 @@ class HoverCopyTool {
     });
 
     chrome.storage.onChanged.addListener((changes) => {
-      if (changes.regexPatterns || changes.activePatternIds || changes.activePatternId) {
+      if (
+        changes.regexPatterns ||
+        changes.activePatternIds ||
+        changes.activePatternId
+      ) {
         this.loadPatterns();
       }
     });
@@ -141,7 +145,7 @@ class HoverCopyTool {
     const url = link.href;
     console.log("Hovering over link:", url);
     console.log("Active patterns:", this.activePatterns);
-    
+
     const matches = this.extractMatches(url);
     console.log("Extracted matches:", matches);
 
@@ -167,7 +171,6 @@ class HoverCopyTool {
     this.positionHoverWindow(link);
     this.attachHoverWindowEvents();
   }
-
 
   private positionHoverWindow(link: HTMLAnchorElement): void {
     if (!this.hoverWindow) return;
