@@ -17,6 +17,7 @@ interface ExtractedMatch {
 interface StorageData {
   regexPatterns?: RegexPattern[];
   activePatternIds?: string[];
+  isAppEnabled?: boolean;
 }
 
 class HoverCopyTool {
@@ -25,6 +26,7 @@ class HoverCopyTool {
   private currentLink: HTMLAnchorElement | null = null;
   private activePatterns: RegexPattern[] = [];
   private hideTimer: number | null = null;
+  private isAppEnabled: boolean = true;
 
   constructor() {
     this.init();
@@ -41,6 +43,7 @@ class HoverCopyTool {
         "regexPatterns",
         "activePatternIds",
         "activePatternId", // Legacy support
+        "isAppEnabled",
       ])) as StorageData & { activePatternId?: string };
       const patterns = result.regexPatterns || [];
 
@@ -50,8 +53,11 @@ class HoverCopyTool {
         activeIds = [result.activePatternId];
       }
 
+      this.isAppEnabled = result.isAppEnabled ?? true;
+
       console.log("Loaded patterns:", patterns);
       console.log("Active pattern IDs:", activeIds);
+      console.log("App enabled:", this.isAppEnabled);
 
       this.activePatterns = patterns.filter((p) => activeIds.includes(p.id));
 
@@ -59,6 +65,7 @@ class HoverCopyTool {
     } catch (error) {
       console.error("Failed to load patterns:", error);
       this.activePatterns = [];
+      this.isAppEnabled = true;
     }
   }
 
@@ -81,7 +88,8 @@ class HoverCopyTool {
       if (
         changes.regexPatterns ||
         changes.activePatternIds ||
-        changes.activePatternId
+        changes.activePatternId ||
+        changes.isAppEnabled
       ) {
         this.loadPatterns();
       }
@@ -89,6 +97,8 @@ class HoverCopyTool {
   }
 
   private handleMouseOver(event: MouseEvent): void {
+    if (!this.isAppEnabled) return;
+    
     const link = (event.target as Element).closest(
       "a[href]"
     ) as HTMLAnchorElement;

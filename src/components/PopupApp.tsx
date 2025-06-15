@@ -1,5 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
+import { loadAppEnabled, saveAppEnabled } from "../utils/storage";
+import ToggleSwitch from "./ToggleSwitch";
 
 interface RegexPattern {
   id: string;
@@ -19,9 +21,11 @@ const PopupApp: React.FC = () => {
   const [editingPatternId, setEditingPatternId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: "", regex: "" });
+  const [isAppEnabled, setIsAppEnabled] = useState(true);
 
   useEffect(() => {
     loadPatterns();
+    loadAppEnabledState();
   }, []);
 
   const loadPatterns = async (): Promise<void> => {
@@ -45,6 +49,16 @@ const PopupApp: React.FC = () => {
       console.error("Failed to load patterns:", error);
       setPatterns([]);
       setActivePatternIds([]);
+    }
+  };
+
+  const loadAppEnabledState = async (): Promise<void> => {
+    try {
+      const enabled = await loadAppEnabled();
+      setIsAppEnabled(enabled);
+    } catch (error) {
+      console.error("Failed to load app enabled state:", error);
+      setIsAppEnabled(true);
     }
   };
 
@@ -153,10 +167,20 @@ const PopupApp: React.FC = () => {
     await savePatterns(newPatterns, newActiveIds);
   };
 
+  const toggleAppEnabled = async (newState: boolean): Promise<void> => {
+    try {
+      await saveAppEnabled(newState);
+      setIsAppEnabled(newState);
+    } catch (error) {
+      console.error("Failed to toggle app enabled state:", error);
+    }
+  };
+
   const exportSettings = (): void => {
     const exportData = {
       regexPatterns: patterns,
       activePatternIds: activePatternIds,
+      isAppEnabled: isAppEnabled,
       exportedAt: new Date().toISOString(),
       version: "1.0",
     };
@@ -230,6 +254,13 @@ const PopupApp: React.FC = () => {
           )
         ) {
           await savePatterns(validPatterns, importActiveIds);
+          
+          // Import app enabled state if available
+          if (typeof importData.isAppEnabled === "boolean") {
+            await saveAppEnabled(importData.isAppEnabled);
+            setIsAppEnabled(importData.isAppEnabled);
+          }
+          
           alert("設定のインポートが完了しました。");
         }
       } catch (error) {
@@ -249,6 +280,11 @@ const PopupApp: React.FC = () => {
       <div className="header">
         <h1>Hover Copy Tool</h1>
         <p>正規表現パターンの設定</p>
+        <ToggleSwitch
+          checked={isAppEnabled}
+          onChange={toggleAppEnabled}
+          className="toggle-switch-header"
+        />
       </div>
 
       <div className="section">

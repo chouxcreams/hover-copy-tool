@@ -8,6 +8,7 @@ interface RegexPattern {
 interface StorageData {
   regexPatterns?: RegexPattern[];
   activePatternIds?: string[];
+  isAppEnabled?: boolean;
 }
 
 export async function loadPatterns(): Promise<{
@@ -38,6 +39,25 @@ export async function loadPatterns(): Promise<{
       patterns: [],
       activeIds: [],
     };
+  }
+}
+
+export async function loadAppEnabled(): Promise<boolean> {
+  try {
+    const result = await chrome.storage.sync.get("isAppEnabled") as StorageData;
+    return result.isAppEnabled ?? true; // Default to enabled
+  } catch (error) {
+    console.error("Failed to load app enabled state:", error);
+    return true;
+  }
+}
+
+export async function saveAppEnabled(isEnabled: boolean): Promise<void> {
+  try {
+    await chrome.storage.sync.set({ isAppEnabled: isEnabled });
+  } catch (error) {
+    console.error("Failed to save app enabled state:", error);
+    throw error;
   }
 }
 
