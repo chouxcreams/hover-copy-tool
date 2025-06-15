@@ -440,4 +440,286 @@ describe("PopupApp", () => {
       expect(setCall[0].activePatternIds).toHaveLength(1);
     });
   });
+
+  describe("Export/Import functionality", () => {
+    beforeEach(() => {
+      global.URL.createObjectURL = vi.fn(() => 'mock-blob-url');
+      global.URL.revokeObjectURL = vi.fn();
+    });
+
+    it("should export settings as JSON", async () => {
+      const createElementSpy = vi.spyOn(document, 'createElement');
+      const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+      const removeChildSpy = vi.spyOn(document.body, 'removeChild');
+
+      render(<PopupApp />);
+
+      await waitFor(() => {
+        expect(screen.getByText('User ID Pattern')).toBeInTheDocument();
+      });
+
+      const exportButton = screen.getByText('設定をエクスポート');
+      fireEvent.click(exportButton);
+
+      expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(appendChildSpy).toHaveBeenCalled();
+      expect(removeChildSpy).toHaveBeenCalled();
+      expect(global.URL.createObjectURL).toHaveBeenCalled();
+      expect(global.URL.revokeObjectURL).toHaveBeenCalled();
+    });
+
+    it("should import valid settings", async () => {
+      const mockFile = new File(
+        [JSON.stringify({
+          regexPatterns: [
+            {
+              id: 'imported1',
+              name: 'Imported Pattern',
+              regex: '[a-z]+',
+              createdAt: 1234567890001,
+            },
+          ],
+          activePatternIds: ['imported1'],
+          exportedAt: '2023-01-01T00:00:00.000Z',
+          version: '1.0',
+        })],
+        'test-settings.json',
+        { type: 'application/json' }
+      );
+
+      mockConfirm.mockReturnValue(true);
+
+      render(<PopupApp />);
+
+      await waitFor(() => {
+        expect(screen.getByText('User ID Pattern')).toBeInTheDocument();
+      });
+
+      const importLabel = screen.getByLabelText('設定をインポート');
+      const fileInput = importLabel.querySelector('input[type="file"]') as HTMLInputElement;
+      
+      if (fileInput) {
+        Object.defineProperty(fileInput, 'files', {
+          value: [mockFile],
+          configurable: true,
+        });
+
+        fireEvent.change(fileInput);
+
+        await waitFor(() => {
+          expect(mockConfirm).toHaveBeenCalledWith(
+            '1個のパターンをインポートします。既存の設定は置き換えられます。続行しますか？'
+          );
+        });
+
+        expect(mockChromeStorage.sync.set).toHaveBeenCalledWith({
+          regexPatterns: [
+            {
+              id: 'imported1',
+              name: 'Imported Pattern',
+              regex: '[a-z]+',
+              createdAt: 1234567890001,
+            },
+          ],
+          activePatternIds: ['imported1'],
+        });
+      }
+    });
+
+    it("should reject invalid JSON format", async () => {
+      const mockFile = new File(['invalid json'], 'invalid.json', {
+        type: 'application/json',
+      });
+
+      render(<PopupApp />);
+
+      const importLabel = screen.getByLabelText('設定をインポート');
+      const fileInput = importLabel.querySelector('input[type="file"]') as HTMLInputElement;
+      
+      if (fileInput) {
+        Object.defineProperty(fileInput, 'files', {
+          value: [mockFile],
+          configurable: true,
+        });
+
+        fireEvent.change(fileInput);
+
+        await waitFor(() => {
+          expect(mockAlert).toHaveBeenCalledWith(
+            'ファイルの読み込みに失敗しました。正しいJSONファイルを選択してください。'
+          );
+        });
+      }
+    });
+
+    it("should reject file with invalid regex patterns", async () => {
+      const mockFile = new File(
+        [JSON.stringify({
+          regexPatterns: [
+            {
+              id: 'invalid1',
+              name: 'Invalid Pattern',
+              regex: '[invalid',
+              createdAt: 1234567890002,
+            },
+          ],
+          activePatternIds: ['invalid1'],
+        })],
+        'invalid-regex.json',
+        { type: 'application/json' }
+      );
+
+      render(<PopupApp />);
+
+      const importLabel = screen.getByLabelText('設定をインポート');
+      const fileInput = importLabel.querySelector('input[type="file"]') as HTMLInputElement;
+      
+      if (fileInput) {
+        Object.defineProperty(fileInput, 'files', {
+          value: [mockFile],
+          configurable: true,
+        });
+
+        fireEvent.change(fileInput);
+
+        await waitFor(() => {
+          expect(mockAlert).toHaveBeenCalledWith(
+            '無効な正規表現が含まれています: Invalid Pattern - [invalid'
+          );
+        });
+      }
+    });
+
+    it("should reject file without regexPatterns", async () => {
+      const mockFile = new File(
+        [JSON.stringify({
+          someOtherData: 'test',
+        })],
+        'missing-patterns.json',
+        { type: 'application/json' }
+      );
+
+      render(<PopupApp />);
+
+      const importLabel = screen.getByLabelText('設定をインポート');
+      const fileInput = importLabel.querySelector('input[type="file"]') as HTMLInputElement;
+      
+      if (fileInput) {
+        Object.defineProperty(fileInput, 'files', {
+          value: [mockFile],
+          configurable: true,
+        });
+
+        fireEvent.change(fileInput);
+
+        await waitFor(() => {
+          expect(mockAlert).toHaveBeenCalledWith(
+            '無効なファイル形式です。正しい設定ファイルを選択してください。'
+          );
+        });
+      }
+    });
+
+    it("should filter out invalid patterns during import", async () => {
+      const mockFile = new File(
+        [JSON.stringify({
+          regexPatterns: [
+            {
+              id: 'valid1',
+              name: 'Valid Pattern',
+              regex: '[a-z]+',
+              createdAt: 1234567890001,
+            },
+            {
+              id: 'invalid1',
+              name: 'Missing regex',
+              createdAt: 1234567890002,
+            },
+            {
+              name: 'Missing ID',
+              regex: '[0-9]+',
+              createdAt: 1234567890003,
+            },
+          ],
+          activePatternIds: ['valid1', 'invalid1'],
+        })],
+        'mixed-patterns.json',
+        { type: 'application/json' }
+      );
+
+      mockConfirm.mockReturnValue(true);
+
+      render(<PopupApp />);
+
+      const importLabel = screen.getByLabelText('設定をインポート');
+      const fileInput = importLabel.querySelector('input[type="file"]') as HTMLInputElement;
+      
+      if (fileInput) {
+        Object.defineProperty(fileInput, 'files', {
+          value: [mockFile],
+          configurable: true,
+        });
+
+        fireEvent.change(fileInput);
+
+        await waitFor(() => {
+          expect(mockConfirm).toHaveBeenCalledWith(
+            '1個のパターンをインポートします。既存の設定は置き換えられます。続行しますか？'
+          );
+        });
+
+        expect(mockChromeStorage.sync.set).toHaveBeenCalledWith({
+          regexPatterns: [
+            {
+              id: 'valid1',
+              name: 'Valid Pattern',
+              regex: '[a-z]+',
+              createdAt: 1234567890001,
+            },
+          ],
+          activePatternIds: ['valid1'],
+        });
+      }
+    });
+
+    it("should handle user cancellation during import", async () => {
+      const mockFile = new File(
+        [JSON.stringify({
+          regexPatterns: [
+            {
+              id: 'test1',
+              name: 'Test Pattern',
+              regex: '[a-z]+',
+              createdAt: 1234567890001,
+            },
+          ],
+          activePatternIds: ['test1'],
+        })],
+        'test-settings.json',
+        { type: 'application/json' }
+      );
+
+      mockConfirm.mockReturnValue(false);
+
+      render(<PopupApp />);
+
+      const importLabel = screen.getByLabelText('設定をインポート');
+      const fileInput = importLabel.querySelector('input[type="file"]') as HTMLInputElement;
+      
+      if (fileInput) {
+        Object.defineProperty(fileInput, 'files', {
+          value: [mockFile],
+          configurable: true,
+        });
+
+        fireEvent.change(fileInput);
+
+        await waitFor(() => {
+          expect(mockConfirm).toHaveBeenCalled();
+        });
+
+        expect(mockChromeStorage.sync.set).not.toHaveBeenCalled();
+      }
+    });
+  });
 });
