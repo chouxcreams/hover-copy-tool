@@ -4,3 +4,6 @@ dist/
 *.log
 *.map
 .claude/settings.local.json
+
+# Storybook
+storybook-static/

@@ -55,11 +55,28 @@ npm run dev
 
 Reactコンポーネントの開発・テスト用にStorybookを使用できます:
 
+#### ローカル開発
+
 ```bash
 npm run storybook
 ```
 
 ブラウザで `http://localhost:6006` を開くとStorybookのUIが表示されます。
+
+#### オンライン版
+
+StorybookはGitHub Pagesでホスティングされており、以下のURLからアクセスできます：
+
+**🔗 [Storybook - Hover Copy Tool](https://chouxcreams.github.io/hover-copy-tool)**
+
+mainブランチにプッシュすると自動的にデプロイされます。
+
+#### 手動デプロイ
+
+```bash
+# Storybookをビルドしてデプロイ
+npm run deploy-storybook
+```
 
 詳細な使用方法は [STORYBOOK.md](./STORYBOOK.md) を参照してください。
 

@@ -2,7 +2,20 @@ module.exports = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [],
   framework: '@storybook/react',
+  // GitHub Pages対応のベースURL設定
+  managerWebpack: (config) => {
+    // GitHub Pagesでのパス設定
+    if (process.env.NODE_ENV === 'production') {
+      config.output.publicPath = '/hover-copy-tool/';
+    }
+    return config;
+  },
   webpackFinal: async (config) => {
+    // GitHub Pages対応のパブリックパス設定
+    if (process.env.NODE_ENV === 'production') {
+      config.output.publicPath = '/hover-copy-tool/';
+    }
+
     // TypeScript support
     config.module.rules.push({
       test: /\.tsx?$/,

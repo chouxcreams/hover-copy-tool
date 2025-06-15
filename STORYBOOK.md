@@ -16,10 +16,26 @@ npm run storybook
 
 ブラウザで `http://localhost:6006` を開くとStorybookのUIが表示されます。
 
+### オンライン版（GitHub Pages）
+
+StorybookはGitHub Pagesでホスティングされています：
+
+**🔗 https://chouxcreams.github.io/hover-copy-tool**
+
 ### ビルド
 
 ```bash
 npm run build-storybook
+```
+
+### デプロイ
+
+#### 自動デプロイ
+mainブランチにプッシュすると、GitHub Actionsによって自動的にStorybookがビルドされ、GitHub Pagesにデプロイされます。
+
+#### 手動デプロイ
+```bash
+npm run deploy-storybook
 ```
 
 ## 利用可能なStory
