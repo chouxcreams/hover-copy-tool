@@ -1,0 +1,219 @@
+interface RegexPattern {
+  id: string;
+  name: string;
+  regex: string;
+  createdAt: number;
+}
+
+interface ExtractedMatch {
+  value: string;
+  patternName: string;
+}
+
+interface StorageData {
+  regexPatterns?: RegexPattern[];
+  activePatternId?: string;
+}
+
+class HoverCopyTool {
+  private hoverWindow: HTMLElement | null = null;
+  private currentLink: HTMLAnchorElement | null = null;
+  private activePatterns: RegexPattern[] = [];
+
+  constructor() {
+    this.init();
+  }
+
+  private init(): void {
+    this.loadPatterns();
+    this.attachEventListeners();
+  }
+
+  private async loadPatterns(): Promise<void> {
+    try {
+      const result = await chrome.storage.sync.get(['regexPatterns', 'activePatternId']) as StorageData;
+      const patterns = result.regexPatterns || [];
+      const activeId = result.activePatternId;
+      
+      if (activeId) {
+        const activePattern = patterns.find(p => p.id === activeId);
+        this.activePatterns = activePattern ? [activePattern] : [];
+      }
+    } catch (error) {
+      console.error('Failed to load patterns:', error);
+      this.activePatterns = [];
+    }
+  }
+
+  private attachEventListeners(): void {
+    document.addEventListener('mouseover', (e: MouseEvent) => this.handleMouseOver(e));
+    document.addEventListener('mouseout', (e: MouseEvent) => this.handleMouseOut(e));
+    
+    chrome.storage.onChanged.addListener((changes) => {
+      if (changes.regexPatterns || changes.activePatternId) {
+        this.loadPatterns();
+      }
+    });
+  }
+
+  private handleMouseOver(event: MouseEvent): void {
+    const link = (event.target as Element).closest('a[href]') as HTMLAnchorElement;
+    if (!link || link === this.currentLink) return;
+    
+    this.currentLink = link;
+    this.showHoverWindow(link);
+  }
+
+  private handleMouseOut(event: MouseEvent): void {
+    const link = (event.target as Element).closest('a[href]') as HTMLAnchorElement;
+    if (!link || link !== this.currentLink) {
+      this.hideHoverWindow();
+      this.currentLink = null;
+    }
+  }
+
+  private extractMatches(url: string): ExtractedMatch[] {
+    const matches: ExtractedMatch[] = [];
+    
+    for (const pattern of this.activePatterns) {
+      try {
+        const regex = new RegExp(pattern.regex, 'g');
+        let match;
+        while ((match = regex.exec(url)) !== null) {
+          if (match[1]) {
+            matches.push({
+              value: match[1],
+              patternName: pattern.name
+            });
+          } else if (match[0]) {
+            matches.push({
+              value: match[0],
+              patternName: pattern.name
+            });
+          }
+          // Prevent infinite loop for zero-length matches
+          if (match.index === regex.lastIndex) {
+            regex.lastIndex++;
+          }
+        }
+      } catch (error) {
+        console.error('Invalid regex pattern:', pattern.regex, error);
+      }
+    }
+    
+    return matches;
+  }
+
+  private showHoverWindow(link: HTMLAnchorElement): void {
+    const url = link.href;
+    const matches = this.extractMatches(url);
+    
+    if (matches.length === 0) return;
+    
+    this.hideHoverWindow();
+    
+    this.hoverWindow = document.createElement('div');
+    this.hoverWindow.className = 'hover-copy-window';
+    this.hoverWindow.innerHTML = this.createHoverWindowHTML(matches);
+    
+    document.body.appendChild(this.hoverWindow);
+    this.positionHoverWindow(link);
+    
+    this.attachHoverWindowEvents();
+  }
+
+  private createHoverWindowHTML(matches: ExtractedMatch[]): string {
+    const itemsHTML = matches.map((match, index) => `
+      <div class="hover-copy-item">
+        <span class="match-value">${this.escapeHtml(match.value)}</span>
+        <button class="copy-btn" data-value="${this.escapeHtml(match.value)}">Copy</button>
+      </div>
+    `).join('');
+    
+    return `
+      <div class="hover-copy-header">Extracted Matches</div>
+      <div class="hover-copy-items">${itemsHTML}</div>
+    `;
+  }
+
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  private positionHoverWindow(link: HTMLAnchorElement): void {
+    if (!this.hoverWindow) return;
+    
+    const rect = link.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    
+    let top = rect.bottom + window.scrollY + 5;
+    let left = rect.left + window.scrollX;
+    
+    const hoverRect = this.hoverWindow.getBoundingClientRect();
+    
+    if (top + hoverRect.height > windowHeight + window.scrollY) {
+      top = rect.top + window.scrollY - hoverRect.height - 5;
+    }
+    
+    if (left + hoverRect.width > windowWidth + window.scrollX) {
+      left = windowWidth + window.scrollX - hoverRect.width - 10;
+    }
+    
+    this.hoverWindow.style.top = `${top}px`;
+    this.hoverWindow.style.left = `${left}px`;
+  }
+
+  private attachHoverWindowEvents(): void {
+    if (!this.hoverWindow) return;
+    
+    const copyButtons = this.hoverWindow.querySelectorAll('.copy-btn') as NodeListOf<HTMLButtonElement>;
+    copyButtons.forEach(button => {
+      button.addEventListener('click', (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const value = button.dataset.value;
+        if (value) {
+          this.copyToClipboard(value);
+        }
+      });
+    });
+    
+    this.hoverWindow.addEventListener('mouseleave', () => {
+      this.hideHoverWindow();
+    });
+  }
+
+  private async copyToClipboard(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      this.showCopyNotification();
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+    }
+  }
+
+  private showCopyNotification(): void {
+    const notification = document.createElement('div');
+    notification.className = 'copy-notification';
+    notification.textContent = 'コピーしました！';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 2000);
+  }
+
+  private hideHoverWindow(): void {
+    if (this.hoverWindow && this.hoverWindow.parentNode) {
+      this.hoverWindow.parentNode.removeChild(this.hoverWindow);
+      this.hoverWindow = null;
+    }
+  }
+}
+
+new HoverCopyTool();

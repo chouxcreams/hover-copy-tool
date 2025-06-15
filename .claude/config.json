@@ -1,0 +1,33 @@
+{
+  "project_name": "hover-copy-tool",
+  "description": "Browser extension for extracting URL parts with regex on hover",
+  "preferred_model": "claude-3-5-sonnet-20241022",
+  "development": {
+    "primary_language": "JavaScript",
+    "framework": "Browser Extension API",
+    "target_browsers": ["Chrome", "Firefox"],
+    "build_system": "to_be_determined",
+    "package_manager": "npm"
+  },
+  "conventions": {
+    "code_style": "Standard JavaScript conventions",
+    "naming": "camelCase for variables/functions, PascalCase for classes",
+    "file_structure": "src/ for source code, separate directories for content/popup/background scripts"
+  },
+  "project_specific": {
+    "prd_location": "docs/PRD.md",
+    "prd_language": "Japanese",
+    "main_features": [
+      "URL regex extraction on link hover",
+      "Multi-pattern regex configuration",
+      "Clipboard integration with user confirmation",
+      "Cross-browser compatibility"
+    ],
+    "performance_requirements": "Must work efficiently on pages with many links",
+    "security_considerations": "Safe handling of user-defined regex patterns"
+  },
+  "documentation": {
+    "project_guide": "CLAUDE.md",
+    "requirements": "docs/PRD.md"
+  }
+}
