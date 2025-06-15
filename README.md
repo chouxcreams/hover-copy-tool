@@ -43,8 +43,30 @@
 
 ## 開発
 
+### 開発モード
+
 自動リビルド付きの開発モードで実行:
 
 ```bash
 npm run dev
 ```
+
+### Storybook
+
+Reactコンポーネントの開発・テスト用にStorybookを使用できます:
+
+```bash
+npm run storybook
+```
+
+ブラウザで `http://localhost:6006` を開くとStorybookのUIが表示されます。
+
+詳細な使用方法は [STORYBOOK.md](./STORYBOOK.md) を参照してください。
+
+## アーキテクチャ
+
+- **React 18**: UIコンポーネントの開発
+- **TypeScript**: 型安全性の確保
+- **Webpack 4**: バンドリングとビルド
+- **Storybook**: コンポーネント開発・テスト
+- **Chrome Extensions API**: ブラウザ拡張機能の機能

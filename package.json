@@ -6,7 +6,9 @@
   "scripts": {
     "build": "webpack --mode=production",
     "dev": "webpack --mode=development --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "keywords": [
     "browser-extension",
@@ -22,6 +24,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@storybook/react": "^6.5.16",
     "@types/chrome": "^0.0.268",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
