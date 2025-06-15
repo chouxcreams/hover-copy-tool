@@ -6,17 +6,17 @@
 
 1. 依存関係をインストール:
 
-```bash
-npm install
-```
+    ```bash
+    npm install
+    ```
 
 2. 拡張機能をビルド:
 
-```bash
-npm run build
-```
+    ```bash
+    npm run build
+    ```
 
-ビルドされた拡張機能は `dist/` フォルダに出力されます。
+    ビルドされた拡張機能は `dist/` フォルダに出力されます。
 
 ## インストール
 
