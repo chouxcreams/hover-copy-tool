@@ -2,11 +2,11 @@
   "name": "hover-copy-tool",
   "version": "1.0.0",
   "description": "Browser extension to extract and copy URL patterns on hover",
-  "main": "index.js",
+  "type": "module",
   "homepage": "https://chouxcreams.github.io/hover-copy-tool",
   "scripts": {
-    "build": "webpack --mode=production",
-    "dev": "webpack --mode=development --watch",
+    "build": "tsx build.ts",
+    "dev": "tsx build.ts --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
@@ -29,15 +29,12 @@
   "devDependencies": {
     "@storybook/react": "^6.5.16",
     "@types/chrome": "^0.0.268",
+    "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "copy-webpack-plugin": "^6.4.1",
-    "css-loader": "^5.2.7",
+    "esbuild": "^0.19.0",
     "gh-pages": "^6.3.0",
-    "style-loader": "^2.0.0",
-    "ts-loader": "^8.4.0",
-    "typescript": "^4.9.5",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^4.10.0"
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
 }

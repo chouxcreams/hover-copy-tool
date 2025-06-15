@@ -1,67 +1,77 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリでコードを扱う際にClaude Code (claude.ai/code) に対するガイダンスを提供します。
 
-## Project Overview
+## プロジェクト概要
 
-This is a browser extension project called "hover-copy-tool" that allows users to extract specific parts of URLs using regular expressions when hovering over links on web pages. The extension is designed for Chrome and Firefox, targeting web developers and QA engineers who frequently need to extract IDs or parameters from URLs.
+「hover-copy-tool」というブラウザ拡張機能プロジェクトで、Webページ上のリンクにホバーした際に正規表現を使用してURLの特定部分を抽出できるツールです。ChromeとFirefoxに対応し、URLからIDやパラメータを頻繁に抽出する必要があるWeb開発者やQAエンジニアをターゲットとしています。
 
-## Current Status
+## 現在の状況
 
-The project is in its initial planning phase with:
+プロジェクトは初期企画段階にあります：
 
-- Comprehensive PRD (Product Requirements Document) in Japanese at `docs/PRD.md`
-- Mise configuration for Node.js development environment
-- No source code implementation yet
+- `docs/PRD.md`に日本語で詳細なPRD（プロダクト要求仕様書）を作成済み
+- Node.js開発環境用のMise設定を完了
+- ソースコード実装はまだ未着手
 
-## Development Environment
+## 開発環境
 
-The project uses Mise for development environment management:
+このプロジェクトでは開発環境管理にMiseを使用しています：
 
-- Node.js (latest version)
-- Claude Code CLI tool
+- Node.js（最新版）
+- Claude Code CLIツール
 
-To set up the development environment:
+開発環境のセットアップ方法：
 
 ```bash
 mise install
 ```
 
-## Planned Architecture
+**Claude Code使用時の重要な注意点**：Bashツールを使用する際、mise環境は自動的にアクティベートされません。`mise.toml`で指定された正しいNode.jsバージョンを使用するには、`mise exec`でコマンドを実行するか、事前にmiseをアクティベートする必要があります：
 
-Based on the PRD, the extension will consist of:
+```bash
+# 方法1: miseでコマンドを実行
+mise exec -- node --version
 
-### Core Components
+# 方法2: mise環境をアクティベート
+eval "$(mise activate bash)"
+```
 
-- **Content Script**: Handles link hover detection and regex extraction
-- **Popup Interface**: Configuration UI for managing regex patterns
-- **Background Script**: Manages extension state and settings
-- **Hover Window**: Displays extraction results and copy functionality
+## 予定されているアーキテクチャ
 
-### Key Features
+PRDに基づき、拡張機能は以下の構成要素で構成されます：
 
-1. **URL Pattern Extraction**: Extract substrings from URLs using user-defined regex patterns
-2. **Multi-pattern Support**: Users can save and switch between multiple regex configurations
-3. **Hover Interface**: Non-intrusive popup showing extraction results
-4. **Clipboard Integration**: Copy extracted strings with user confirmation
-5. **Cross-browser Compatibility**: Support for Chrome and Firefox
+### コアコンポーネント
 
-## File Structure (To Be Implemented)
+- **コンテンツスクリプト**: リンクホバー検出と正規表現抽出を処理
+- **ポップアップインターフェース**: 正規表現パターン管理用の設定UI
+- **バックグラウンドスクリプト**: 拡張機能の状態と設定を管理
+- **ホバーウィンドウ**: 抽出結果の表示とコピー機能
 
-The project will need:
+### 主要機能
 
-- `manifest.json` - Browser extension manifest
-- `src/` - Source code directory
-  - `content/` - Content scripts for webpage interaction
-  - `popup/` - Extension popup UI
-  - `background/` - Background scripts
-- `package.json` - Node.js dependencies and build scripts
-- Build configuration (webpack/rollup)
-- Test framework setup
+1. **URLパターン抽出**: ユーザー定義の正規表現パターンを使用してURLから部分文字列を抽出
+2. **マルチパターンサポート**: 複数の正規表現設定を保存・切り替え可能
+3. **ホバーインターフェース**: 抽出結果を表示する非侵入的なポップアップ
+4. **クリップボード統合**: ユーザー確認後に抽出文字列をコピー
+5. **クロスブラウザ対応**: ChromeとFirefoxの両方をサポート
 
-## Development Notes
+## ファイル構成（実装予定）
 
-- The PRD is written in Japanese and contains detailed functional specifications
-- Focus on performance with pages containing many links
-- Security considerations for user-defined regex patterns
-- Intuitive UI design for both hover window and settings popup
+以下のファイル構成が必要です：
+
+- `manifest.json` - ブラウザ拡張機能のマニフェスト
+- `src/` - ソースコードディレクトリ
+  - `content/` - Webページ連携用のコンテンツスクリプト
+  - `popup/` - 拡張機能のポップアップUI
+  - `background/` - バックグラウンドスクリプト
+- `package.json` - Node.js依存関係とビルドスクリプト
+- ビルド設定（webpack/rollup）
+- テストフレームワークのセットアップ
+
+## 開発に関する注意事項
+
+- PRDは日本語で記述され、詳細な機能仕様を含んでいます
+- 多数のリンクを含むページでのパフォーマンスに注意
+- ユーザー定義正規表現パターンのセキュリティ考慮事項
+- ホバーウィンドウと設定ポップアップの直感的なUI設計
