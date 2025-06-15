@@ -7,35 +7,43 @@ interface RegexPattern {
 
 interface StorageData {
   regexPatterns?: RegexPattern[];
-  activePatternId?: string;
+  activePatternIds?: string[];
 }
 
 export class StorageManager {
-  static async loadPatterns(): Promise<{ patterns: RegexPattern[]; activeId: string | null }> {
+  static async loadPatterns(): Promise<{ patterns: RegexPattern[]; activeIds: string[] }> {
     try {
       const result = (await chrome.storage.sync.get([
         'regexPatterns',
-        'activePatternId',
-      ])) as StorageData;
+        'activePatternIds',
+        'activePatternId', // Legacy support
+      ])) as StorageData & { activePatternId?: string };
+      
+      let activeIds = result.activePatternIds || [];
+      
+      // Migration: convert old single activePatternId to array
+      if (!result.activePatternIds && result.activePatternId) {
+        activeIds = [result.activePatternId];
+      }
       
       return {
         patterns: result.regexPatterns || [],
-        activeId: result.activePatternId || null,
+        activeIds,
       };
     } catch (error) {
       console.error('Failed to load patterns:', error);
       return {
         patterns: [],
-        activeId: null,
+        activeIds: [],
       };
     }
   }
 
-  static async savePatterns(patterns: RegexPattern[], activeId: string | null): Promise<void> {
+  static async savePatterns(patterns: RegexPattern[], activeIds: string[]): Promise<void> {
     try {
       await chrome.storage.sync.set({
         regexPatterns: patterns,
-        activePatternId: activeId,
+        activePatternIds: activeIds,
       });
     } catch (error) {
       console.error('Failed to save patterns:', error);
@@ -43,15 +51,15 @@ export class StorageManager {
     }
   }
 
-  static async getActivePattern(): Promise<RegexPattern | null> {
+  static async getActivePatterns(): Promise<RegexPattern[]> {
     try {
-      const { patterns, activeId } = await this.loadPatterns();
-      if (!activeId) return null;
+      const { patterns, activeIds } = await this.loadPatterns();
+      if (activeIds.length === 0) return [];
       
-      return patterns.find(p => p.id === activeId) || null;
+      return patterns.filter(p => activeIds.includes(p.id));
     } catch (error) {
-      console.error('Failed to get active pattern:', error);
-      return null;
+      console.error('Failed to get active patterns:', error);
+      return [];
     }
   }
 }

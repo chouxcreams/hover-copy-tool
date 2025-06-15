@@ -9,12 +9,12 @@ interface RegexPattern {
 
 interface StorageData {
   regexPatterns?: RegexPattern[];
-  activePatternId?: string;
+  activePatternIds?: string[];
 }
 
 const PopupApp: React.FC = () => {
   const [patterns, setPatterns] = useState<RegexPattern[]>([]);
-  const [activePatternId, setActivePatternId] = useState<string | null>(null);
+  const [activePatternIds, setActivePatternIds] = useState<string[]>([]);
   const [editingPatternId, setEditingPatternId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', regex: '' });
@@ -27,31 +27,37 @@ const PopupApp: React.FC = () => {
     try {
       const result = (await chrome.storage.sync.get([
         'regexPatterns',
-        'activePatternId',
-      ])) as StorageData;
+        'activePatternIds',
+        'activePatternId', // Legacy support
+      ])) as StorageData & { activePatternId?: string };
       const loadedPatterns = result.regexPatterns || [];
-      const activeId = result.activePatternId || null;
+      
+      let activeIds = result.activePatternIds || [];
+      // Migration: convert old single activePatternId to array
+      if (!result.activePatternIds && result.activePatternId) {
+        activeIds = [result.activePatternId];
+      }
       
       setPatterns(loadedPatterns);
-      setActivePatternId(activeId);
+      setActivePatternIds(activeIds);
     } catch (error) {
       console.error('Failed to load patterns:', error);
       setPatterns([]);
-      setActivePatternId(null);
+      setActivePatternIds([]);
     }
   };
 
   const savePatterns = async (
     newPatterns: RegexPattern[],
-    newActiveId: string | null
+    newActiveIds: string[]
   ): Promise<void> => {
     try {
       await chrome.storage.sync.set({
         regexPatterns: newPatterns,
-        activePatternId: newActiveId,
+        activePatternIds: newActiveIds,
       });
       setPatterns(newPatterns);
-      setActivePatternId(newActiveId);
+      setActivePatternIds(newActiveIds);
     } catch (error) {
       console.error('Failed to save patterns:', error);
     }
@@ -95,7 +101,7 @@ const PopupApp: React.FC = () => {
     };
 
     let newPatterns: RegexPattern[];
-    let newActiveId = activePatternId;
+    let newActiveIds = [...activePatternIds];
 
     if (editingPatternId) {
       const index = patterns.findIndex((p) => p.id === editingPatternId);
@@ -106,17 +112,25 @@ const PopupApp: React.FC = () => {
     } else {
       newPatterns = [...patterns, pattern];
       if (newPatterns.length === 1) {
-        newActiveId = pattern.id;
+        newActiveIds = [pattern.id];
       }
     }
 
-    await savePatterns(newPatterns, newActiveId);
+    await savePatterns(newPatterns, newActiveIds);
     toggleForm();
   };
 
-  const activatePattern = async (patternId: string): Promise<void> => {
-    if (activePatternId === patternId) return;
-    await savePatterns(patterns, patternId);
+  const togglePatternActive = async (patternId: string): Promise<void> => {
+    const isActive = activePatternIds.includes(patternId);
+    let newActiveIds: string[];
+    
+    if (isActive) {
+      newActiveIds = activePatternIds.filter(id => id !== patternId);
+    } else {
+      newActiveIds = [...activePatternIds, patternId];
+    }
+    
+    await savePatterns(patterns, newActiveIds);
   };
 
   const editPattern = (patternId: string): void => {
@@ -132,14 +146,9 @@ const PopupApp: React.FC = () => {
     if (!confirm('このパターンを削除しますか？')) return;
 
     const newPatterns = patterns.filter((p) => p.id !== patternId);
-    const newActiveId =
-      activePatternId === patternId
-        ? newPatterns.length > 0
-          ? newPatterns[0].id
-          : null
-        : activePatternId;
+    const newActiveIds = activePatternIds.filter(id => id !== patternId);
 
-    await savePatterns(newPatterns, newActiveId);
+    await savePatterns(newPatterns, newActiveIds);
   };
 
   return (
@@ -155,40 +164,42 @@ const PopupApp: React.FC = () => {
           {patterns.length === 0 ? (
             <div className="no-patterns">パターンが登録されていません</div>
           ) : (
-            patterns.map((pattern) => (
-              <div
-                key={pattern.id}
-                className={`pattern-item ${
-                  pattern.id === activePatternId ? 'active' : ''
-                }`}
-              >
-                <div className="pattern-header">
-                  <div className="pattern-name">{pattern.name}</div>
-                  <div className="pattern-actions">
-                    <button
-                      className="btn btn-primary btn-small"
-                      onClick={() => activatePattern(pattern.id)}
-                      disabled={pattern.id === activePatternId}
-                    >
-                      {pattern.id === activePatternId ? '使用中' : '使用'}
-                    </button>
-                    <button
-                      className="btn btn-secondary btn-small"
-                      onClick={() => editPattern(pattern.id)}
-                    >
-                      編集
-                    </button>
-                    <button
-                      className="btn btn-secondary btn-small"
-                      onClick={() => deletePattern(pattern.id)}
-                    >
-                      削除
-                    </button>
+            patterns.map((pattern) => {
+              const isActive = activePatternIds.includes(pattern.id);
+              return (
+                <div
+                  key={pattern.id}
+                  className={`pattern-item ${isActive ? 'active' : ''}`}
+                >
+                  <div className="pattern-header">
+                    <div className="pattern-name">
+                      <input
+                        type="checkbox"
+                        checked={isActive}
+                        onChange={() => togglePatternActive(pattern.id)}
+                        style={{ marginRight: '8px' }}
+                      />
+                      {pattern.name}
+                    </div>
+                    <div className="pattern-actions">
+                      <button
+                        className="btn btn-secondary btn-small"
+                        onClick={() => editPattern(pattern.id)}
+                      >
+                        編集
+                      </button>
+                      <button
+                        className="btn btn-secondary btn-small"
+                        onClick={() => deletePattern(pattern.id)}
+                      >
+                        削除
+                      </button>
+                    </div>
                   </div>
+                  <div className="pattern-regex">{pattern.regex}</div>
                 </div>
-                <div className="pattern-regex">{pattern.regex}</div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

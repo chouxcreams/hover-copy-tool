@@ -16,7 +16,7 @@ interface ExtractedMatch {
 
 interface StorageData {
   regexPatterns?: RegexPattern[];
-  activePatternId?: string;
+  activePatternIds?: string[];
 }
 
 class HoverCopyTool {
@@ -39,18 +39,21 @@ class HoverCopyTool {
     try {
       const result = (await chrome.storage.sync.get([
         "regexPatterns",
-        "activePatternId",
-      ])) as StorageData;
+        "activePatternIds",
+        "activePatternId", // Legacy support
+      ])) as StorageData & { activePatternId?: string };
       const patterns = result.regexPatterns || [];
-      const activeId = result.activePatternId;
+      
+      let activeIds = result.activePatternIds || [];
+      // Migration: convert old single activePatternId to array
+      if (!result.activePatternIds && result.activePatternId) {
+        activeIds = [result.activePatternId];
+      }
 
       console.log("Loaded patterns:", patterns);
-      console.log("Active pattern ID:", activeId);
+      console.log("Active pattern IDs:", activeIds);
 
-      if (activeId) {
-        const activePattern = patterns.find((p) => p.id === activeId);
-        this.activePatterns = activePattern ? [activePattern] : [];
-      }
+      this.activePatterns = patterns.filter(p => activeIds.includes(p.id));
 
       console.log("Final active patterns:", this.activePatterns);
     } catch (error) {
@@ -75,7 +78,7 @@ class HoverCopyTool {
     });
 
     chrome.storage.onChanged.addListener((changes) => {
-      if (changes.regexPatterns || changes.activePatternId) {
+      if (changes.regexPatterns || changes.activePatternIds || changes.activePatternId) {
         this.loadPatterns();
       }
     });
