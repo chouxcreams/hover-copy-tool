@@ -115,7 +115,7 @@ class HoverCopyTool {
     for (const pattern of this.activePatterns) {
       try {
         const regex = new RegExp(pattern.regex, "g");
-        let match;
+        let match: RegExpExecArray | null = null;
         while ((match = regex.exec(url)) !== null) {
           if (match[1]) {
             matches.push({

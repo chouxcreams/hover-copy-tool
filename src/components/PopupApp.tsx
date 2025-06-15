@@ -158,16 +158,16 @@ const PopupApp: React.FC = () => {
       regexPatterns: patterns,
       activePatternIds: activePatternIds,
       exportedAt: new Date().toISOString(),
-      version: "1.0"
+      version: "1.0",
     };
 
     const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(dataBlob);
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `hover-copy-tool-settings-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `hover-copy-tool-settings-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -184,17 +184,26 @@ const PopupApp: React.FC = () => {
         const content = e.target?.result as string;
         const importData = JSON.parse(content);
 
-        if (!importData.regexPatterns || !Array.isArray(importData.regexPatterns)) {
-          alert('無効なファイル形式です。正しい設定ファイルを選択してください。');
+        if (
+          !importData.regexPatterns ||
+          !Array.isArray(importData.regexPatterns)
+        ) {
+          alert(
+            "無効なファイル形式です。正しい設定ファイルを選択してください。"
+          );
           return;
         }
 
-        const validPatterns = importData.regexPatterns.filter((pattern: RegexPattern) => 
-          pattern.id && pattern.name && pattern.regex && typeof pattern.createdAt === 'number'
+        const validPatterns = importData.regexPatterns.filter(
+          (pattern: RegexPattern) =>
+            pattern.id &&
+            pattern.name &&
+            pattern.regex &&
+            typeof pattern.createdAt === "number"
         );
 
         if (validPatterns.length === 0) {
-          alert('有効なパターンが見つかりませんでした。');
+          alert("有効なパターンが見つかりませんでした。");
           return;
         }
 
@@ -202,29 +211,37 @@ const PopupApp: React.FC = () => {
           try {
             new RegExp(pattern.regex);
           } catch (regexError) {
-            alert(`無効な正規表現が含まれています: ${pattern.name} - ${pattern.regex}`);
+            alert(
+              `無効な正規表現が含まれています: ${pattern.name} - ${pattern.regex}`
+            );
             return;
           }
         }
 
-        const importActiveIds = Array.isArray(importData.activePatternIds) 
-          ? importData.activePatternIds.filter((id: string) => 
+        const importActiveIds = Array.isArray(importData.activePatternIds)
+          ? importData.activePatternIds.filter((id: string) =>
               validPatterns.some((p: RegexPattern) => p.id === id)
             )
           : [];
 
-        if (confirm(`${validPatterns.length}個のパターンをインポートします。既存の設定は置き換えられます。続行しますか？`)) {
+        if (
+          confirm(
+            `${validPatterns.length}個のパターンをインポートします。既存の設定は置き換えられます。続行しますか？`
+          )
+        ) {
           await savePatterns(validPatterns, importActiveIds);
-          alert('設定のインポートが完了しました。');
+          alert("設定のインポートが完了しました。");
         }
       } catch (error) {
-        console.error('Import error:', error);
-        alert('ファイルの読み込みに失敗しました。正しいJSONファイルを選択してください。');
+        console.error("Import error:", error);
+        alert(
+          "ファイルの読み込みに失敗しました。正しいJSONファイルを選択してください。"
+        );
       }
     };
     reader.readAsText(file);
-    
-    event.target.value = '';
+
+    event.target.value = "";
   };
 
   return (
@@ -289,20 +306,20 @@ const PopupApp: React.FC = () => {
       <div className="section">
         <div className="section-title">設定の管理</div>
         <div className="settings-actions">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-secondary"
             onClick={exportSettings}
           >
             設定をエクスポート
           </button>
-          <label className="btn btn-secondary" style={{ marginLeft: '8px' }}>
+          <label className="btn btn-secondary" style={{ marginLeft: "8px" }}>
             設定をインポート
             <input
               type="file"
               accept=".json"
               onChange={importSettings}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
           </label>
         </div>

@@ -20,7 +20,7 @@ export class UrlExtractor {
     for (const pattern of patterns) {
       try {
         const regex = new RegExp(pattern.regex, "g");
-        let match;
+        let match: RegExpExecArray | null = null;
         while ((match = regex.exec(url)) !== null) {
           if (match[1]) {
             matches.push({

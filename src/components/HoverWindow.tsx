@@ -15,13 +15,17 @@ const HoverWindow: React.FC<HoverWindowProps> = ({ matches, onCopy }) => {
     <div className="hover-copy-window">
       <div className="hover-copy-header">Extracted Matches</div>
       <div className="hover-copy-items">
-        {matches.map((match, index) => (
-          <div key={index} className="hover-copy-item">
+        {matches.map((match) => (
+          <div
+            key={`${match.patternName}-${match.value}`}
+            className="hover-copy-item"
+          >
             <div className="match-info">
               <span className="pattern-name">{match.patternName}</span>
               <span className="match-value">{match.value}</span>
             </div>
             <button
+              type="button"
               className="copy-btn"
               onClick={(e) => {
                 e.preventDefault();

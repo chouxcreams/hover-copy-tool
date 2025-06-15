@@ -15,7 +15,11 @@ const SimpleButton: React.FC<SimpleButtonProps> = ({
   const variantClass = variant === "primary" ? "btn-primary" : "btn-secondary";
 
   return (
-    <button className={`${baseClasses} ${variantClass}`} onClick={onClick}>
+    <button
+      type="button"
+      className={`${baseClasses} ${variantClass}`}
+      onClick={onClick}
+    >
       {label}
     </button>
   );

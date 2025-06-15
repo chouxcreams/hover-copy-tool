@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { StorageManager } from "./storage";
+import { getActivePatterns, loadPatterns, savePatterns } from "./storage";
 
 // Mock Chrome storage API
 const mockChromeStorage = {
@@ -31,7 +31,7 @@ const mockPatterns = [
   },
 ];
 
-describe("StorageManager", () => {
+describe("Storage utilities", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -43,7 +43,7 @@ describe("StorageManager", () => {
         activePatternIds: ["pattern1", "pattern2"],
       });
 
-      const result = await StorageManager.loadPatterns();
+      const result = await loadPatterns();
 
       expect(result).toEqual({
         patterns: mockPatterns,
@@ -63,7 +63,7 @@ describe("StorageManager", () => {
         activePatternId: "pattern1",
       });
 
-      const result = await StorageManager.loadPatterns();
+      const result = await loadPatterns();
 
       expect(result).toEqual({
         patterns: mockPatterns,
@@ -74,7 +74,7 @@ describe("StorageManager", () => {
     it("returns defaults when storage is empty", async () => {
       mockChromeStorage.sync.get.mockResolvedValue({});
 
-      const result = await StorageManager.loadPatterns();
+      const result = await loadPatterns();
 
       expect(result).toEqual({
         patterns: [],
@@ -88,7 +88,7 @@ describe("StorageManager", () => {
         .mockImplementation(() => {});
       mockChromeStorage.sync.get.mockRejectedValue(new Error("Storage error"));
 
-      const result = await StorageManager.loadPatterns();
+      const result = await loadPatterns();
 
       expect(result).toEqual({
         patterns: [],
@@ -109,7 +109,7 @@ describe("StorageManager", () => {
         // activePatternIds is missing
       });
 
-      const result = await StorageManager.loadPatterns();
+      const result = await loadPatterns();
 
       expect(result).toEqual({
         patterns: mockPatterns,
@@ -122,7 +122,7 @@ describe("StorageManager", () => {
     it("saves patterns and active IDs to storage", async () => {
       mockChromeStorage.sync.set.mockResolvedValue(undefined);
 
-      await StorageManager.savePatterns(mockPatterns, ["pattern1", "pattern2"]);
+      await savePatterns(mockPatterns, ["pattern1", "pattern2"]);
 
       expect(mockChromeStorage.sync.set).toHaveBeenCalledWith({
         regexPatterns: mockPatterns,
@@ -133,7 +133,7 @@ describe("StorageManager", () => {
     it("saves with empty active IDs array", async () => {
       mockChromeStorage.sync.set.mockResolvedValue(undefined);
 
-      await StorageManager.savePatterns(mockPatterns, []);
+      await savePatterns(mockPatterns, []);
 
       expect(mockChromeStorage.sync.set).toHaveBeenCalledWith({
         regexPatterns: mockPatterns,
@@ -144,7 +144,7 @@ describe("StorageManager", () => {
     it("saves empty patterns array", async () => {
       mockChromeStorage.sync.set.mockResolvedValue(undefined);
 
-      await StorageManager.savePatterns([], []);
+      await savePatterns([], []);
 
       expect(mockChromeStorage.sync.set).toHaveBeenCalledWith({
         regexPatterns: [],
@@ -155,7 +155,7 @@ describe("StorageManager", () => {
     it("saves single active pattern", async () => {
       mockChromeStorage.sync.set.mockResolvedValue(undefined);
 
-      await StorageManager.savePatterns(mockPatterns, ["pattern1"]);
+      await savePatterns(mockPatterns, ["pattern1"]);
 
       expect(mockChromeStorage.sync.set).toHaveBeenCalledWith({
         regexPatterns: mockPatterns,
@@ -170,9 +170,9 @@ describe("StorageManager", () => {
       const storageError = new Error("Storage error");
       mockChromeStorage.sync.set.mockRejectedValue(storageError);
 
-      await expect(
-        StorageManager.savePatterns(mockPatterns, ["pattern1"])
-      ).rejects.toThrow("Storage error");
+      await expect(savePatterns(mockPatterns, ["pattern1"])).rejects.toThrow(
+        "Storage error"
+      );
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Failed to save patterns:",
@@ -190,7 +190,7 @@ describe("StorageManager", () => {
         activePatternIds: ["pattern1", "pattern2"],
       });
 
-      const result = await StorageManager.getActivePatterns();
+      const result = await getActivePatterns();
 
       expect(result).toEqual(mockPatterns);
     });
@@ -201,7 +201,7 @@ describe("StorageManager", () => {
         activePatternIds: ["pattern1", "nonexistent"],
       });
 
-      const result = await StorageManager.getActivePatterns();
+      const result = await getActivePatterns();
 
       expect(result).toEqual([mockPatterns[0]]);
     });
@@ -212,7 +212,7 @@ describe("StorageManager", () => {
         activePatternIds: [],
       });
 
-      const result = await StorageManager.getActivePatterns();
+      const result = await getActivePatterns();
 
       expect(result).toEqual([]);
     });
@@ -223,7 +223,7 @@ describe("StorageManager", () => {
         activePatternIds: ["pattern1"],
       });
 
-      const result = await StorageManager.getActivePatterns();
+      const result = await getActivePatterns();
 
       expect(result).toEqual([]);
     });
@@ -234,7 +234,7 @@ describe("StorageManager", () => {
         activePatternId: "pattern2",
       });
 
-      const result = await StorageManager.getActivePatterns();
+      const result = await getActivePatterns();
 
       expect(result).toEqual([mockPatterns[1]]);
     });
@@ -245,7 +245,7 @@ describe("StorageManager", () => {
         .mockImplementation(() => {});
       mockChromeStorage.sync.get.mockRejectedValue(new Error("Storage error"));
 
-      const result = await StorageManager.getActivePatterns();
+      const result = await getActivePatterns();
 
       expect(result).toEqual([]);
       expect(consoleErrorSpy).toHaveBeenCalledWith(

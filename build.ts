@@ -6,9 +6,9 @@ import {
   readdirSync,
   statSync,
   writeFileSync,
-} from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+} from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import esbuild from "esbuild";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -81,7 +81,7 @@ function copyDirectory(src: string, dest: string): void {
     mkdirSync(dest, { recursive: true });
   }
   const files = readdirSync(src);
-  files.forEach((file) => {
+  for (const file of files) {
     const srcPath = join(src, file);
     const destPath = join(dest, file);
     if (statSync(srcPath).isDirectory()) {
@@ -89,7 +89,7 @@ function copyDirectory(src: string, dest: string): void {
     } else {
       copyFileSync(srcPath, destPath);
     }
-  });
+  }
 }
 
 async function build(): Promise<void> {
@@ -108,7 +108,7 @@ async function build(): Promise<void> {
       }
     }
 
-    copyFiles.forEach(({ from, to }) => {
+    for (const { from, to } of copyFiles) {
       try {
         ensureDir(to);
         copyFileSync(from, to);
@@ -119,9 +119,9 @@ async function build(): Promise<void> {
           (error as Error).message
         );
       }
-    });
+    }
 
-    copyDirectories.forEach(({ from, to }) => {
+    for (const { from, to } of copyDirectories) {
       try {
         copyDirectory(from, to);
         console.log(`Copied directory ${from} -> ${to}`);
@@ -131,7 +131,7 @@ async function build(): Promise<void> {
           (error as Error).message
         );
       }
-    });
+    }
 
     if (!isWatch) {
       console.log("Build completed successfully!");

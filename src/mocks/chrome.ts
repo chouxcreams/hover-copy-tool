@@ -20,20 +20,25 @@ export const mockChromeStorage = {
         activePatternId: "pattern1",
       });
     },
-    set: (data: any) => {
+    set: (data: Record<string, unknown>) => {
       console.log("Mock chrome.storage.sync.set called with:", data);
       return Promise.resolve();
     },
   },
   onChanged: {
-    addListener: (callback: Function) => {
+    addListener: (
+      callback: (
+        changes: Record<string, chrome.storage.StorageChange>,
+        areaName: string
+      ) => void
+    ) => {
       console.log("Mock chrome.storage.onChanged.addListener called");
     },
   },
 };
 
 // グローバルにChrome APIモックを設定
-(global as any).chrome = {
+(global as Record<string, unknown>).chrome = {
   storage: mockChromeStorage,
 };
 

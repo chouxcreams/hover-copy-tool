@@ -4,8 +4,8 @@
 declare namespace chrome {
   namespace storage {
     interface StorageChange {
-      oldValue?: any;
-      newValue?: any;
+      oldValue?: unknown;
+      newValue?: unknown;
     }
 
     interface StorageChangedEvent {
