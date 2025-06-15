@@ -9,7 +9,7 @@ description: "GitHubに Pull Request を作成する"
 ## 指示内容
 
 現在のブランチの変更内容を main ブランチに向けた Pull Request として作成してください。
-このリポジトリは `chouxcream/hover-copy-tool` です。
+このリポジトリは `chouxcreams/hover-copy-tool` です。
 
 ### 作業手順
 
