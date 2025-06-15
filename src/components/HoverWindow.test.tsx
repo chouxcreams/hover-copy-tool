@@ -19,6 +19,15 @@ describe('HoverWindow', () => {
     expect(screen.getByText('xyz-123')).toBeInTheDocument()
   })
 
+  it('renders pattern names for each match', () => {
+    const mockOnCopy = vi.fn()
+    render(<HoverWindow matches={mockMatches} onCopy={mockOnCopy} />)
+    
+    expect(screen.getByText('User ID')).toBeInTheDocument()
+    expect(screen.getByText('Product Code')).toBeInTheDocument()
+    expect(screen.getByText('Session ID')).toBeInTheDocument()
+  })
+
   it('renders correct number of copy buttons', () => {
     const mockOnCopy = vi.fn()
     render(<HoverWindow matches={mockMatches} onCopy={mockOnCopy} />)
@@ -76,6 +85,8 @@ describe('HoverWindow', () => {
     expect(container.querySelector('.hover-copy-header')).toBeInTheDocument()
     expect(container.querySelector('.hover-copy-items')).toBeInTheDocument()
     expect(container.querySelectorAll('.hover-copy-item')).toHaveLength(3)
+    expect(container.querySelectorAll('.match-info')).toHaveLength(3)
+    expect(container.querySelectorAll('.pattern-name')).toHaveLength(3)
     expect(container.querySelectorAll('.match-value')).toHaveLength(3)
     expect(container.querySelectorAll('.copy-btn')).toHaveLength(3)
   })

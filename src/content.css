@@ -34,17 +34,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px;
+  padding: 6px;
   background: #f9f9f9;
   border-radius: 3px;
   gap: 8px;
+}
+
+.match-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.pattern-name {
+  font-size: 10px;
+  font-weight: bold;
+  color: #007cba;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .match-value {
   font-family: monospace;
   font-size: 11px;
   color: #666;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
