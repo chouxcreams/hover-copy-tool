@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/dist": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "biomejs.biome",
+  "biome.enabled": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "files.autoSave": "onFocusChange",
+  "prettier.enable": false
+}
