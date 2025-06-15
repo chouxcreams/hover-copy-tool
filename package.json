@@ -24,13 +24,13 @@
   "license": "MIT",
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@storybook/react": "^6.5.16",
     "@types/chrome": "^0.0.268",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react-dom": "^19.1.6",
     "copy-webpack-plugin": "^6.4.1",
     "css-loader": "^5.2.7",
     "gh-pages": "^6.3.0",
