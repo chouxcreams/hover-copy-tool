@@ -287,7 +287,7 @@ const PopupApp: React.FC = () => {
         />
       </div>
 
-      <div className="section">
+      <div className={`section ${!isAppEnabled ? "disabled" : ""}`}>
         <div className="section-title">保存されたパターン</div>
         <div className="pattern-list">
           {patterns.length === 0 ? (
@@ -307,6 +307,7 @@ const PopupApp: React.FC = () => {
                         checked={isActive}
                         onChange={() => togglePatternActive(pattern.id)}
                         style={{ marginRight: "8px" }}
+                        disabled={!isAppEnabled}
                       />
                       {pattern.name}
                     </div>
@@ -314,12 +315,14 @@ const PopupApp: React.FC = () => {
                       <button
                         className="btn btn-secondary btn-small"
                         onClick={() => editPattern(pattern.id)}
+                        disabled={!isAppEnabled}
                       >
                         編集
                       </button>
                       <button
                         className="btn btn-secondary btn-small"
                         onClick={() => deletePattern(pattern.id)}
+                        disabled={!isAppEnabled}
                       >
                         削除
                       </button>
@@ -334,7 +337,7 @@ const PopupApp: React.FC = () => {
       </div>
 
       <div className="toggle-form">
-        <button type="button" onClick={toggleForm}>
+        <button type="button" onClick={toggleForm} disabled={!isAppEnabled}>
           {showForm ? "フォームを閉じる" : "新しいパターンを追加"}
         </button>
       </div>

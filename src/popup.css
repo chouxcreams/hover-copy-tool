@@ -293,3 +293,25 @@
   top: 8px;
   right: 0;
 }
+
+.section.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.section.disabled .pattern-item {
+  background: #f9f9f9;
+}
+
+.section.disabled .pattern-item.active {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.section.disabled .pattern-name {
+  color: #999;
+}
+
+.section.disabled .pattern-regex {
+  color: #999;
+}
