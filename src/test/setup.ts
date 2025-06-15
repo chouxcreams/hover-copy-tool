@@ -1,6 +1,9 @@
 import { vi } from 'vitest'
 import '@testing-library/jest-dom'
 
+// Configure React Testing Library to use automatic act
+global.IS_REACT_ACT_ENVIRONMENT = true
+
 // Mock Chrome APIs
 Object.defineProperty(global, 'chrome', {
   value: {
