@@ -84,6 +84,22 @@ npm run deploy-storybook
 
 - **React 18**: UIコンポーネントの開発
 - **TypeScript**: 型安全性の確保
-- **Webpack 4**: バンドリングとビルド
+- **ESBuild**: 高速バンドリングとビルド
+- **Vitest**: ユニットテスト
 - **Storybook**: コンポーネント開発・テスト
-- **Chrome Extensions API**: ブラウザ拡張機能の機能
+- **Chrome Extensions Manifest V3**: ブラウザ拡張機能の機能
+
+## テスト
+
+ユニットテストを実行:
+
+```bash
+# ウォッチモードでテスト実行
+npm run test
+
+# 一度だけテスト実行
+npm run test:run
+
+# UIでテスト実行
+npm run test:ui
+```
