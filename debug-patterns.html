@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hover Copy Tool Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .link { display: block; margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Hover Copy Tool Debug Page</h1>
+    
+    <div class="debug-info">
+        <h3>テスト用リンク:</h3>
+        <a href="https://example.com/user/123" class="link">User ID: 123</a>
+        <a href="https://example.com/post/456" class="link">Post ID: 456</a>
+        <a href="https://example.com/product/789/review" class="link">Product: 789</a>
+        <a href="/local/path/user/999" class="link">Local User: 999</a>
+    </div>
+
+    <div class="debug-info">
+        <h3>推奨テストパターン:</h3>
+        <ul>
+            <li>名前: "User ID", 正規表現: "user/(\d+)"</li>
+            <li>名前: "Post ID", 正規表現: "post/(\d+)"</li>
+            <li>名前: "Product ID", 正規表現: "product/(\d+)"</li>
+        </ul>
+    </div>
+
+    <div class="debug-info">
+        <h3>デバッグ手順:</h3>
+        <ol>
+            <li>拡張機能のポップアップを開いて、上記のパターンを1つ追加してアクティブにする</li>
+            <li>ブラウザのデベロッパーツール（F12）でコンソールを開く</li>
+            <li>上記のリンクにマウスをホバーする</li>
+            <li>コンソールログを確認する</li>
+        </ol>
+    </div>
+
+    <script>
+        console.log("Debug page loaded");
+        
+        // Check if content script is loaded
+        setTimeout(() => {
+            console.log("Checking if content script is active...");
+        }, 1000);
+    </script>
+</body>
+</html>
