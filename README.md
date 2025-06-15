@@ -78,7 +78,7 @@ mainブランチにプッシュすると自動的にデプロイされます。
 npm run deploy-storybook
 ```
 
-詳細な使用方法は [STORYBOOK.md](./STORYBOOK.md) を参照してください。
+詳細な使用方法は [STORYBOOK.md](./docs/STORYBOOK.md) を参照してください。
 
 ## アーキテクチャ
 
