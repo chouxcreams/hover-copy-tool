@@ -5,5 +5,8 @@ dist/
 *.map
 .claude/settings.local.json
 
+# Release files
+hover-copy-tool-v*.zip
+
 # Storybook
 storybook-static/

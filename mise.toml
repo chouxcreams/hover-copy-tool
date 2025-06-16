@@ -2,3 +2,12 @@
 node = "latest"
 "npm:@anthropic-ai/claude-code" = "latest"
 uv = "latest"
+jq = "latest"
+
+[tasks.release]
+description = "Build and create release zip file"
+run = """
+npm run build
+VERSION=$(jq -r '.version' src/manifest.json)
+cd dist && zip -r ../hover-copy-tool-v$VERSION.zip .
+"""
