@@ -27,6 +27,7 @@ class HoverCopyTool {
   private activePatterns: RegexPattern[] = [];
   private hideTimer: number | null = null;
   private isAppEnabled: boolean = true;
+  private mousePosition: { x: number; y: number } = { x: 0, y: 0 };
 
   constructor() {
     this.init();
@@ -104,6 +105,7 @@ class HoverCopyTool {
     ) as HTMLAnchorElement;
     if (!link || link === this.currentLink) return;
 
+    this.mousePosition = { x: event.clientX, y: event.clientY };
     this.clearHideTimer();
     this.currentLink = link;
     this.showHoverWindow(link);
@@ -185,21 +187,31 @@ class HoverCopyTool {
   private positionHoverWindow(link: HTMLAnchorElement): void {
     if (!this.hoverWindow) return;
 
-    const rect = link.getBoundingClientRect();
     const windowHeight = window.innerHeight;
     const windowWidth = window.innerWidth;
 
-    let top = rect.bottom + window.scrollY + 5;
-    let left = rect.left + window.scrollX;
+    // マウス位置を基準にウィンドウを配置（マウスカーソルの右下に配置）
+    let top = this.mousePosition.y + window.scrollY + 10;
+    let left = this.mousePosition.x + window.scrollX + 10;
 
     const hoverRect = this.hoverWindow.getBoundingClientRect();
 
+    // 画面の下端を超える場合はマウスカーソルの上に配置
     if (top + hoverRect.height > windowHeight + window.scrollY) {
-      top = rect.top + window.scrollY - hoverRect.height - 5;
+      top = this.mousePosition.y + window.scrollY - hoverRect.height - 10;
     }
 
+    // 画面の右端を超える場合はマウスカーソルの左に配置
     if (left + hoverRect.width > windowWidth + window.scrollX) {
-      left = windowWidth + window.scrollX - hoverRect.width - 10;
+      left = this.mousePosition.x + window.scrollX - hoverRect.width - 10;
+    }
+
+    // 画面の上端・左端を超えないように調整
+    if (top < window.scrollY) {
+      top = window.scrollY + 5;
+    }
+    if (left < window.scrollX) {
+      left = window.scrollX + 5;
     }
 
     this.hoverWindow.style.top = `${top}px`;
