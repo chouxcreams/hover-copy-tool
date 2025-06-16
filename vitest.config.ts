@@ -5,6 +5,10 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
+    // Suppress React act() warnings in tests
+    env: {
+      NODE_ENV: "test",
+    },
   },
   resolve: {
     alias: {
