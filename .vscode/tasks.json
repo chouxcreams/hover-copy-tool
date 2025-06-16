@@ -1,0 +1,76 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: build",
+      "type": "shell",
+      "command": "mise",
+      "args": ["exec", "--", "npm", "run", "build"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Build the browser extension using npm run build with mise environment"
+    },
+    {
+      "label": "npm: dev",
+      "type": "shell",
+      "command": "mise",
+      "args": ["exec", "--", "npm", "run", "dev"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Start development mode with file watching"
+    },
+    {
+      "label": "npm: test",
+      "type": "shell",
+      "command": "mise",
+      "args": ["exec", "--", "npm", "run", "test"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Run tests in watch mode"
+    },
+    {
+      "label": "npm: test:run",
+      "type": "shell",
+      "command": "mise",
+      "args": ["exec", "--", "npm", "run", "test:run"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Run tests once"
+    }
+  ]
+}
