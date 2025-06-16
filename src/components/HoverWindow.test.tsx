@@ -32,7 +32,7 @@ describe("HoverWindow", () => {
     const mockOnCopy = vi.fn();
     render(<HoverWindow matches={mockMatches} onCopy={mockOnCopy} />);
 
-    const copyButtons = screen.getAllByTitle("Copy to clipboard");
+    const copyButtons = screen.getAllByRole("button");
     expect(copyButtons).toHaveLength(3);
   });
 
@@ -40,7 +40,7 @@ describe("HoverWindow", () => {
     const mockOnCopy = vi.fn();
     render(<HoverWindow matches={mockMatches} onCopy={mockOnCopy} />);
 
-    const copyButtons = screen.getAllByTitle("Copy to clipboard");
+    const copyButtons = screen.getAllByRole("button");
 
     fireEvent.click(copyButtons[0]);
     expect(mockOnCopy).toHaveBeenCalledWith("123456");
@@ -59,7 +59,7 @@ describe("HoverWindow", () => {
 
     render(<HoverWindow matches={mockMatches} onCopy={mockOnCopy} />);
 
-    const copyButton = screen.getAllByTitle("Copy to clipboard")[0];
+    const copyButton = screen.getAllByRole("button")[0];
 
     fireEvent.click(copyButton, {
       preventDefault: mockPreventDefault,
@@ -74,7 +74,7 @@ describe("HoverWindow", () => {
     render(<HoverWindow matches={[]} onCopy={mockOnCopy} />);
 
     expect(screen.getByText("Extracted Matches")).toBeInTheDocument();
-    expect(screen.queryByTitle("Copy to clipboard")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("applies correct CSS classes", () => {

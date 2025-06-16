@@ -26,7 +26,7 @@ class HoverCopyTool {
   private currentLink: HTMLAnchorElement | null = null;
   private activePatterns: RegexPattern[] = [];
   private hideTimer: number | null = null;
-  private isAppEnabled: boolean = true;
+  private isAppEnabled = true;
   private mousePosition: { x: number; y: number } = { x: 0, y: 0 };
 
   constructor() {
@@ -127,8 +127,8 @@ class HoverCopyTool {
     for (const pattern of this.activePatterns) {
       try {
         const regex = new RegExp(pattern.regex, "g");
-        let match: RegExpExecArray | null = null;
-        while ((match = regex.exec(url)) !== null) {
+        let match: RegExpExecArray | null = regex.exec(url);
+        while (match !== null) {
           if (match[1]) {
             matches.push({
               value: match[1],
@@ -144,6 +144,7 @@ class HoverCopyTool {
           if (match.index === regex.lastIndex) {
             regex.lastIndex++;
           }
+          match = regex.exec(url);
         }
       } catch (error) {
         console.error("Invalid regex pattern:", pattern.regex, error);
@@ -291,7 +292,7 @@ class HoverCopyTool {
       this.reactRoot.unmount();
       this.reactRoot = null;
     }
-    if (this.hoverWindow && this.hoverWindow.parentNode) {
+    if (this.hoverWindow?.parentNode) {
       this.hoverWindow.parentNode.removeChild(this.hoverWindow);
       this.hoverWindow = null;
     }

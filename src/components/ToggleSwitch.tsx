@@ -27,7 +27,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         onChange={handleChange}
         disabled={disabled}
       />
-      <span className="slider"></span>
+      <span className="slider" />
     </label>
   );
 };

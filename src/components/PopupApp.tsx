@@ -313,6 +313,7 @@ const PopupApp: React.FC = () => {
                     </div>
                     <div className="pattern-actions">
                       <button
+                        type="button"
                         className="btn btn-secondary btn-small"
                         onClick={() => editPattern(pattern.id)}
                         disabled={!isAppEnabled}
@@ -320,6 +321,7 @@ const PopupApp: React.FC = () => {
                         編集
                       </button>
                       <button
+                        type="button"
                         className="btn btn-secondary btn-small"
                         onClick={() => deletePattern(pattern.id)}
                         disabled={!isAppEnabled}

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { UrlExtractor } from "./urlExtractor";
+import { extractMatches, validateRegex, generateId } from "./urlExtractor";
 
 const mockPatterns = [
   {
@@ -22,11 +22,11 @@ const mockPatterns = [
   },
 ];
 
-describe("UrlExtractor", () => {
+describe("URL Extractor Functions", () => {
   describe("extractMatches", () => {
     it("extracts matches with capture groups", () => {
       const url = "https://example.com/user/12345/profile";
-      const matches = UrlExtractor.extractMatches(url, [mockPatterns[0]]);
+      const matches = extractMatches(url, [mockPatterns[0]]);
 
       expect(matches).toEqual([{ value: "12345", patternName: "User ID" }]);
     });
@@ -40,7 +40,7 @@ describe("UrlExtractor", () => {
         createdAt: Date.now(),
       };
 
-      const matches = UrlExtractor.extractMatches(url, [pattern]);
+      const matches = extractMatches(url, [pattern]);
 
       expect(matches).toHaveLength(2);
       expect(matches[0].value).toBe("123");
@@ -50,7 +50,7 @@ describe("UrlExtractor", () => {
     it("extracts matches from multiple patterns", () => {
       const url =
         "https://example.com/user/123/product/ABC456?session=a1b2c3d4-e5f6";
-      const matches = UrlExtractor.extractMatches(url, mockPatterns);
+      const matches = extractMatches(url, mockPatterns);
 
       expect(matches).toHaveLength(3);
       expect(matches.find((m) => m.patternName === "User ID")?.value).toBe(
@@ -73,7 +73,7 @@ describe("UrlExtractor", () => {
         createdAt: Date.now(),
       };
 
-      const matches = UrlExtractor.extractMatches(url, [pattern]);
+      const matches = extractMatches(url, [pattern]);
 
       expect(matches).toEqual([
         { value: "/api/v1/users", patternName: "API Path" },
@@ -82,7 +82,7 @@ describe("UrlExtractor", () => {
 
     it("returns empty array when no matches found", () => {
       const url = "https://example.com/about";
-      const matches = UrlExtractor.extractMatches(url, mockPatterns);
+      const matches = extractMatches(url, mockPatterns);
 
       expect(matches).toEqual([]);
     });
@@ -100,7 +100,7 @@ describe("UrlExtractor", () => {
       };
 
       const url = "https://example.com/test";
-      const matches = UrlExtractor.extractMatches(url, [invalidPattern]);
+      const matches = extractMatches(url, [invalidPattern]);
 
       expect(matches).toEqual([]);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -121,7 +121,7 @@ describe("UrlExtractor", () => {
       };
 
       const url = "test";
-      const matches = UrlExtractor.extractMatches(url, [pattern]);
+      const matches = extractMatches(url, [pattern]);
 
       // Should not hang and should handle gracefully
       expect(Array.isArray(matches)).toBe(true);
@@ -136,7 +136,7 @@ describe("UrlExtractor", () => {
       };
 
       const url = "https://example.com/user/123/post/456";
-      const matches = UrlExtractor.extractMatches(url, [pattern]);
+      const matches = extractMatches(url, [pattern]);
 
       expect(matches).toHaveLength(1);
       expect(matches[0].value).toBe("123"); // First capture group
@@ -145,28 +145,28 @@ describe("UrlExtractor", () => {
 
   describe("validateRegex", () => {
     it("returns true for valid regex patterns", () => {
-      expect(UrlExtractor.validateRegex("\\d+")).toBe(true);
-      expect(UrlExtractor.validateRegex("[a-zA-Z0-9]+")).toBe(true);
-      expect(UrlExtractor.validateRegex("/user/(\\d+)")).toBe(true);
-      expect(UrlExtractor.validateRegex(".*")).toBe(true);
+      expect(validateRegex("\\d+")).toBe(true);
+      expect(validateRegex("[a-zA-Z0-9]+")).toBe(true);
+      expect(validateRegex("/user/(\\d+)")).toBe(true);
+      expect(validateRegex(".*")).toBe(true);
     });
 
     it("returns false for invalid regex patterns", () => {
-      expect(UrlExtractor.validateRegex("[")).toBe(false);
-      expect(UrlExtractor.validateRegex("(")).toBe(false);
-      expect(UrlExtractor.validateRegex("*")).toBe(false);
-      expect(UrlExtractor.validateRegex("?")).toBe(false);
+      expect(validateRegex("[")).toBe(false);
+      expect(validateRegex("(")).toBe(false);
+      expect(validateRegex("*")).toBe(false);
+      expect(validateRegex("?")).toBe(false);
     });
 
     it("handles empty string", () => {
-      expect(UrlExtractor.validateRegex("")).toBe(true);
+      expect(validateRegex("")).toBe(true);
     });
   });
 
   describe("generateId", () => {
     it("generates unique IDs", () => {
-      const id1 = UrlExtractor.generateId();
-      const id2 = UrlExtractor.generateId();
+      const id1 = generateId();
+      const id2 = generateId();
 
       expect(id1).not.toBe(id2);
       expect(typeof id1).toBe("string");
@@ -176,7 +176,7 @@ describe("UrlExtractor", () => {
     });
 
     it("generates IDs with expected format", () => {
-      const id = UrlExtractor.generateId();
+      const id = generateId();
 
       // Should be alphanumeric characters (base36)
       expect(id).toMatch(/^[a-z0-9]+$/);
