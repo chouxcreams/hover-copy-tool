@@ -1,5 +1,5 @@
 [tools]
-node = "latest"
+node = "24"
 "npm:@anthropic-ai/claude-code" = "latest"
 uv = "latest"
 jq = "latest"
