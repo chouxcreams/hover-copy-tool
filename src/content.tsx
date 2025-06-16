@@ -2,6 +2,15 @@ import React from "react";
 import { type Root, createRoot } from "react-dom/client";
 import HoverWindow from "./components/HoverWindow";
 
+// 注入済みフラグを設定
+declare global {
+  interface Window {
+    hoverCopyToolInjected?: boolean;
+  }
+}
+
+window.hoverCopyToolInjected = true;
+
 interface RegexPattern {
   id: string;
   name: string;
