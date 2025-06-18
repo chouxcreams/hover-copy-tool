@@ -1,6 +1,6 @@
 {
   "name": "hover-copy-tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Browser extension to extract and copy URL patterns on hover",
   "type": "module",
   "homepage": "https://chouxcreams.github.io/hover-copy-tool",
