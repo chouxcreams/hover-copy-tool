@@ -3,7 +3,7 @@
   "name": "Hover Copy Tool",
   "version": "1.0.0",
   "description": "Extract and copy URL patterns on hover",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
